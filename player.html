@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Loop Player</title>
+  <style>
+    :root { color-scheme: dark light; }
+    html, body { height: 100%; margin: 0; }
+    body {
+      display: grid;
+      place-items: center;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background: #0b0b0b; color: #fff;
+    }
+    .wrap { text-align: center; padding: 24px; max-width: 720px; }
+    .hidden { display: none !important; }
+    .btn {
+      display: inline-block;
+      padding: 14px 24px;
+      font-size: 18px;
+      border-radius: 999px;
+      border: 0;
+      background: #ffffff;
+      color: #0b0b0b;
+      cursor: pointer;
+    }
+    .btn:active { transform: scale(0.99); }
+    .hint { opacity: 0.75; margin-top: 12px; font-size: 14px; }
+    .title { font-weight: 700; font-size: 22px; margin-bottom: 6px; }
+    .filename { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; opacity: 0.85; }
+    .controls {
+      margin-top: 20px; display: flex; gap: 10px; justify-content: center; align-items: center;
+    }
+    .small { font-size: 14px; padding: 8px 14px; border-radius: 10px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div id="gate">
+      <div class="title">Tap to Play & Loop</div>
+      <div class="filename" id="fileLabel"></div>
+      <p class="hint">Browsers block autoplay with sound. One tap starts infinite loop.</p>
+      <button class="btn" id="startBtn">Play</button>
+    </div>
+
+    <div id="playing" class="hidden">
+      <div class="title">Now Looping</div>
+      <div class="filename" id="nowLabel"></div>
+      <div class="controls">
+        <button id="pauseBtn" class="btn small">Pause</button>
+        <button id="resumeBtn" class="btn small">Resume</button>
+        <button id="muteBtn" class="btn small">Mute</button>
+        <button id="unmuteBtn" class="btn small hidden">Unmute</button>
+      </div>
+      <p class="hint">This will repeat forever (loop) until you close the tab.</p>
+    </div>
+  </div>
+
+  <audio id="player" loop playsinline></audio>
+
+  <script>
+    // Get file from query string: player.html?file=tracks/01.mp3
+    const params = new URLSearchParams(location.search);
+    const file = params.get('file');
+
+    const gate = document.getElementById('gate');
+    const playing = document.getElementById('playing');
+    const startBtn = document.getElementById('startBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const resumeBtn = document.getElementById('resumeBtn');
+    const muteBtn = document.getElementById('muteBtn');
+    const unmuteBtn = document.getElementById('unmuteBtn');
+    const fileLabel = document.getElementById('fileLabel');
+    const nowLabel = document.getElementById('nowLabel');
+    const audio = document.getElementById('player');
+
+    function setLabels(path) {
+      fileLabel.textContent = path || '(no file provided)';
+      nowLabel.textContent = path || '(no file provided)';
+    }
+
+    // If no file specified, show a friendly error
+    if (!file) {
+      setLabels('');
+      startBtn.disabled = true;
+      fileLabel.textContent = 'Add ?file=tracks/01.mp3 to the URL';
+    } else {
+      audio.src = file;
+      setLabels(file);
+      // Try best-effort autoplay (may fail). If it fails, user will press Play.
+      audio.play().then(() => {
+        gate.classList.add('hidden');
+        playing.classList.remove('hidden');
+      }).catch(() => {
+        // Autoplay blocked – show Play button.
+      });
+    }
+
+    startBtn.addEventListener('click', async () => {
+      try {
+        await audio.play();
+        gate.classList.add('hidden');
+        playing.classList.remove('hidden');
+      } catch (e) {
+        alert('Playback failed. Check your file path or format.');
+      }
+    });
+
+    pauseBtn.addEventListener('click', () => audio.pause());
+    resumeBtn.addEventListener('click', async () => {
+      try { await audio.play(); } catch {}
+    });
+
+    muteBtn.addEventListener('click', () => {
+      audio.muted = true;
+      muteBtn.classList.add('hidden');
+      unmuteBtn.classList.remove('hidden');
+    });
+    unmuteBtn.addEventListener('click', () => {
+      audio.muted = false;
+      unmuteBtn.classList.add('hidden');
+      muteBtn.classList.remove('hidden');
+    });
+
+    // Keep looping seamlessly (the loop attribute already does this)
+    audio.addEventListener('ended', () => {
+      audio.currentTime = 0;
+      audio.play().catch(()=>{});
+    });
+  </script>
+</body>
+</html>

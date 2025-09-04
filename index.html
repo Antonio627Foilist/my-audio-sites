@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Audio Pages</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; padding: 24px; }
+    h1 { margin: 0 0 16px; }
+    ol { line-height: 1.9; }
+    a { text-decoration: none; }
+  </style>
+</head>
+<body>
+  <h1>Audio Pages</h1>
+  <ol id="list"></ol>
+
+  <script>
+    const tracks = [
+      "tracks/01.mp3","tracks/02.mp3","tracks/03.mp3","tracks/04.mp3","tracks/05.mp3",
+      "tracks/06.mp3","tracks/07.mp3","tracks/08.mp3","tracks/09.mp3","tracks/10.mp3",
+      "tracks/11.mp3","tracks/12.mp3","tracks/13.mp3","tracks/14.mp3","tracks/15.mp3",
+      "tracks/16.mp3","tracks/17.mp3","tracks/18.mp3","tracks/19.mp3","tracks/20.mp3",
+      "tracks/21.mp3","tracks/22.mp3","tracks/23.mp3","tracks/24.mp3","tracks/25.mp3",
+      "tracks/26.mp3","tracks/27.mp3","tracks/28.mp3","tracks/29.mp3","tracks/30.mp3",
+      "tracks/31.mp3","tracks/32.mp3","tracks/33.mp3","tracks/34.mp3","tracks/35.mp3",
+      "tracks/36.mp3","tracks/37.mp3","tracks/38.mp3","tracks/39.mp3","tracks/40.mp3",
+      "tracks/41.mp3","tracks/42.mp3","tracks/43.mp3","tracks/44.mp3","tracks/45.mp3",
+      "tracks/46.mp3","tracks/47.mp3","tracks/48.mp3","tracks/49.mp3","tracks/50.mp3"
+    ];
+
+    const list = document.getElementById('list');
+    tracks.forEach((t, i) => {
+      const li = document.createElement('li');
+      const a = document.createElement('a');
+      a.href = `player.html?file=${encodeURIComponent(t)}`;
+      a.textContent = `Audio ${i+1}`;
+      a.target = "_blank"; // open in new tab if you want
+      li.appendChild(a);
+      list.appendChild(li);
+    });
+  </script>
+</body>
+</html>
